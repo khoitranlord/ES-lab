@@ -1,0 +1,27 @@
+/*
+ * software_timer.h
+ *
+ *  Created on: Sep 24, 2023
+ *      Author: HaHuyen
+ */
+
+#ifndef INC_SOFTWARE_TIMER_H_
+#define INC_SOFTWARE_TIMER_H_
+
+#include "software_timer.h"
+
+#include "tim.h"
+#include "led_7seg.h"
+
+#define CYCLE 10
+
+#define NUMS_OF_TIMER 3
+
+extern int timer_flag[NUMS_OF_TIMER];
+
+
+void timer_init();
+void setTimer(int,int);
+
+
+#endif /* INC_SOFTWARE_TIMER_H_ */

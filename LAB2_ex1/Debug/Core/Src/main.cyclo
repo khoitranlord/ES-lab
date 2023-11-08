@@ -1,0 +1,8 @@
+../Core/Src/main.c:71:5:main	2
+../Core/Src/main.c:124:6:SystemClock_Config	3
+../Core/Src/main.c:165:6:system_init	1
+../Core/Src/main.c:178:6:test_LedDebug	2
+../Core/Src/main.c:185:6:test_LedY0	2
+../Core/Src/main.c:194:6:test_LedY1	2
+../Core/Src/main.c:203:6:test_7seg	1
+../Core/Src/main.c:216:6:Error_Handler	1

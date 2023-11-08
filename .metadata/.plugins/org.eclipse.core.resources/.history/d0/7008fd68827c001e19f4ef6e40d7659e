@@ -1,0 +1,171 @@
+/*
+ * fsm_trafficlight.c
+ *
+ *  Created on: Nov 6, 2023
+ *      Author: khoitran
+ */
+
+
+#include "fsm_trafficlight.h"
+#include "lcd.h"
+
+unsigned char blink = 0;
+
+void clearLight(enum flow direction){
+	switch(direction){
+	case HOR:
+		lcd_DrawCircle(30, 120, GREEN, 20, 0);
+		lcd_DrawCircle(90, 120, YELLOW, 20, 0);
+		lcd_DrawCircle(150, 120, RED, 20, 0);
+		break;
+	case VER:
+		lcd_DrawCircle(190, 290, GREEN, 20, 0);
+		lcd_DrawCircle(190, 230, YELLOW, 20, 0);
+		lcd_DrawCircle(190, 170, RED, 20, 0);
+		break;
+	}
+}
+
+void clearTrafficLight(void){
+	clearLight(HOR);
+	clearLight(VER);
+}
+
+void turnOnLight(enum StateLight currentState, enum flow direction){
+	switch(direction){
+	case HOR:
+		switch(currentState){
+		case INIT: break;
+		case RED:
+			clearLight(HOR);
+			lcd_DrawCircle(30, 120, GREEN, 20, 0);
+			lcd_DrawCircle(90, 120, YELLOW, 20, 0);
+			lcd_DrawCircle(150, 120, RED, 20, 1);
+			break;
+		case YELLOW:
+			clearLight(HOR);
+			lcd_DrawCircle(30, 120, GREEN, 20, 0);
+			lcd_DrawCircle(90, 120, YELLOW, 20, 1);
+			lcd_DrawCircle(150, 120, RED, 20, 0);
+			break;
+		case GREEN:
+			clearLight(HOR);
+			lcd_DrawCircle(30, 120, GREEN, 20, 1);
+			lcd_DrawCircle(90, 120, YELLOW, 20, 0);
+			lcd_DrawCircle(150, 120, RED, 20, 0);
+			break;
+		}
+		break;
+	case VER:
+		switch(currentState){
+		case INIT: break;
+		case RED:
+			clearLight(VER);
+			lcd_DrawCircle(190, 290, GREEN, 20, 0);
+			lcd_DrawCircle(190, 230, YELLOW, 20, 0);
+			lcd_DrawCircle(190, 170, RED, 20, 1);
+			break;
+		case YELLOW:
+			clearLight(VER);
+			lcd_DrawCircle(190, 290, GREEN, 20, 0);
+			lcd_DrawCircle(190, 230, YELLOW, 20, 1);
+			lcd_DrawCircle(190, 170, RED, 20, 0);
+			break;
+		case GREEN:
+			clearLight(VER);
+			lcd_DrawCircle(190, 290, GREEN, 20, 1);
+			lcd_DrawCircle(190, 230, YELLOW, 20, 0);
+			lcd_DrawCircle(190, 170, RED, 20, 0);
+			break;
+		}
+		break;
+	}
+}
+
+void blinkyLight(enum StateLight currentState){
+	if(timer_flag[BLINK]){
+		if(blink){
+			clearTrafficLight();
+			blink = 0;
+		}
+		else{
+			turnOnLight(currentState,VER);
+			turnOnLight(currentState,HOR);
+			blink = 1;
+		}
+		setTimer(BLINK,200);
+	}
+}
+
+void displayTrafficLight(enum flow direction, int * trafficTime){
+	switch(direction){
+	case HOR:
+		switch(currentStateHOR){
+		case INIT:
+			clearTrafficLight();
+			setTimer(HOR,trafficTime[REDHORFLAG - 3]);
+			currentStateHOR = RED;
+			break;
+		case RED:
+			turnOnLight(RED,HOR);
+			if(timer_flag[HOR]){
+				currentStateHOR = GREEN;
+				setTimer(HOR,trafficTime[GREENHORFLAG - 3]);
+			}
+			break;
+		case YELLOW:
+			turnOnLight(YELLOW,HOR);
+			if(timer_flag[HOR]){
+				currentStateHOR = RED;
+				setTimer(HOR,trafficTime[REDHORFLAG - 3]);
+			}
+
+			break;
+		case GREEN:
+			turnOnLight(GREEN,HOR);
+			if(timer_flag[HOR]){
+				currentStateHOR = YELLOW;
+				setTimer(HOR, trafficTime[YELLOWHORFLAG - 3]);
+			}
+			break;
+		}
+		break;
+	case VER:
+		switch(currentStateVER){
+		case INIT:
+			clearTrafficLight();
+			setTimer(VER,trafficTime[GREENVERFLAG]);
+			currentStateVER = GREEN;
+			break;
+		case RED:
+			turnOnLight(RED,VER);
+			if(timer_flag[VER]){
+				currentStateVER = GREEN;
+				setTimer(VER,trafficTime[GREENVERFLAG]);
+			}
+
+			break;
+		case YELLOW:
+			turnOnLight(YELLOW,VER);
+			if(timer_flag[VER]){
+				currentStateVER = RED;
+				setTimer(VER,trafficTime[REDVERFLAG]);
+
+			}
+			break;
+		case GREEN:
+			turnOnLight(GREEN,VER);
+			if(timer_flag[VER]){
+				setTimer(VER,trafficTime[YELLOWVERFLAG]);
+				currentStateVER = YELLOW;
+			}
+			break;
+		}
+		break;
+	}
+}
+
+void displayTraffic(int * timeTraffic){
+	displayTrafficLight(VER, timeTraffic);
+	displayTrafficLight(HOR, timeTraffic);
+}

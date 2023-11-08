@@ -1,0 +1,191 @@
+/*
+ * fsm_trafficlight.c
+ *
+ *  Created on: Nov 6, 2023
+ *      Author: khoitran
+ */
+
+
+#include "fsm_trafficlight.h"
+#include "lcd.h"
+
+unsigned char blink = 0;
+
+void clearLight(enum flow direction){
+	switch(direction){
+	case HOR:
+		for(int i = 0 ; i < NUMS_PORT / 2; i++){
+			HAL_GPIO_WritePin(LedPortHOR[i],LedPinHOR[i],0);
+		}
+		break;
+	case VER:
+		for(int i = 0 ; i < NUMS_PORT / 2; i++){
+			HAL_GPIO_WritePin(LedPortVER[i],LedPinVER[i],0);
+		}
+		break;
+	}
+}
+
+void clearTrafficLight(void){
+	clearLight(HOR);
+	clearLight(VER);
+}
+
+void clearPedes(void){
+	HAL_GPIO_WritePin(LedPortPedes[0],LedPinPedes[0],0);
+	HAL_GPIO_WritePin(LedPortPedes[1],LedPinPedes[1],0);
+	buzzer_turn_off();
+}
+
+void turnOnPedes(void){
+	HAL_GPIO_WritePin(LedPortPedes[0],LedPinPedes[0],0);
+	HAL_GPIO_WritePin(LedPortPedes[1],LedPinPedes[1],1);
+	buzzer_turn_on();
+}
+
+void blinkyPedes(void){
+	if(timer_flag[BLINK]){
+		if(blink){
+			clearPedes();
+			blink = 0;
+		}
+		else{
+			turnOnPedes();
+			blink = 1;
+		}
+		setTimer(BLINK,1000);
+	}
+}
+
+void turnOnLight(enum StateLight currentState, enum flow direction){
+	switch(direction){
+	case HOR:
+		switch(currentState){
+		case INIT: break;
+		case RED:
+			clearLight(HOR);
+			HAL_GPIO_WritePin(LedPortHOR[0],LedPinHOR[0],1);
+			HAL_GPIO_WritePin(LedPortHOR[1],LedPinHOR[1],0);
+			break;
+		case YELLOW:
+			clearLight(HOR);
+			HAL_GPIO_WritePin(LedPortHOR[0],LedPinHOR[0],1);
+			HAL_GPIO_WritePin(LedPortHOR[1],LedPinHOR[1],1);
+			break;
+		case GREEN:
+			clearLight(HOR);
+			HAL_GPIO_WritePin(LedPortHOR[0],LedPinHOR[0],0);
+			HAL_GPIO_WritePin(LedPortHOR[1],LedPinHOR[1],1);
+			break;
+		}
+		break;
+	case VER:
+		switch(currentState){
+		case INIT: break;
+		case RED:
+			clearLight(VER);
+			HAL_GPIO_WritePin(LedPortVER[0],LedPinVER[0],1);
+			HAL_GPIO_WritePin(LedPortVER[1],LedPinVER[1],0);
+			break;
+		case YELLOW:
+			clearLight(VER);
+			HAL_GPIO_WritePin(LedPortVER[0],LedPinVER[0],1);
+			HAL_GPIO_WritePin(LedPortVER[1],LedPinVER[1],1);
+			break;
+		case GREEN:
+			clearLight(VER);
+			HAL_GPIO_WritePin(LedPortVER[0],LedPinVER[0],0);
+			HAL_GPIO_WritePin(LedPortVER[1],LedPinVER[1],1);
+			break;
+		}
+		break;
+	}
+}
+
+void blinkyLight(enum StateLight currentState){
+	if(timer_flag[BLINK]){
+		if(blink){
+			clearTrafficLight();
+			blink = 0;
+		}
+		else{
+			turnOnLight(currentState,VER);
+			turnOnLight(currentState,HOR);
+			blink = 1;
+		}
+		setTimer(BLINK,200);
+	}
+}
+
+void displayTrafficLight(enum flow direction, int * trafficTime){
+	switch(direction){
+	case HOR:
+		switch(currentStateHOR){
+		case INIT:
+			clearTrafficLight();
+			setTimer(HOR,trafficTime[REDHORFLAG - 3]);
+			currentStateHOR = RED;
+			break;
+		case RED:
+			turnOnLight(RED,HOR);
+			if(timer_flag[HOR]){
+				currentStateHOR = GREEN;
+				setTimer(HOR,trafficTime[GREENHORFLAG - 3]);
+			}
+			break;
+		case YELLOW:
+			turnOnLight(YELLOW,HOR);
+			if(timer_flag[HOR]){
+				currentStateHOR = RED;
+				setTimer(HOR,trafficTime[REDHORFLAG - 3]);
+			}
+
+			break;
+		case GREEN:
+			turnOnLight(GREEN,HOR);
+			if(timer_flag[HOR]){
+				currentStateHOR = YELLOW;
+				setTimer(HOR, trafficTime[YELLOWHORFLAG - 3]);
+			}
+			break;
+		}
+		break;
+	case VER:
+		switch(currentStateVER){
+		case INIT:
+			clearTrafficLight();
+			setTimer(VER,trafficTime[GREENVERFLAG]);
+			currentStateVER = GREEN;
+			break;
+		case RED:
+			turnOnLight(RED,VER);
+			if(timer_flag[VER]){
+				currentStateVER = GREEN;
+				setTimer(VER,trafficTime[GREENVERFLAG]);
+			}
+
+			break;
+		case YELLOW:
+			turnOnLight(YELLOW,VER);
+			if(timer_flag[VER]){
+				currentStateVER = RED;
+				setTimer(VER,trafficTime[REDVERFLAG]);
+
+			}
+			break;
+		case GREEN:
+			turnOnLight(GREEN,VER);
+			if(timer_flag[VER]){
+				setTimer(VER,trafficTime[YELLOWVERFLAG]);
+				currentStateVER = YELLOW;
+			}
+			break;
+		}
+		break;
+	}
+}
+
+void displayTraffic(int * timeTraffic){
+	displayTrafficLight(VER, timeTraffic);
+	displayTrafficLight(HOR, timeTraffic);
+}

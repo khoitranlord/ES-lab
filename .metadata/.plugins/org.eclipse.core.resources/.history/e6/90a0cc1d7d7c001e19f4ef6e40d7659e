@@ -1,0 +1,13 @@
+/*
+ * fsm_trafficlight.h
+ *
+ *  Created on: Nov 6, 2023
+ *      Author: khoitran
+ */
+
+#ifndef INC_FSM_TRAFFICLIGHT_H_
+#define INC_FSM_TRAFFICLIGHT_H_
+
+
+
+#endif /* INC_FSM_TRAFFICLIGHT_H_ */

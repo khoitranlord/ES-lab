@@ -1,0 +1,17 @@
+/*
+ * software_timer.h
+ *
+ *  Created on: Oct 23, 2023
+ *      Author: khoitran
+ */
+
+#ifndef INC_SOFTWARE_TIMER_H_
+#define INC_SOFTWARE_TIMER_H_
+
+extern unint16_t flag_timer1;
+
+void timer_init();
+void setTimer1(uint16_t duration);
+void timerRun();
+
+#endif /* INC_SOFTWARE_TIMER_H_ */

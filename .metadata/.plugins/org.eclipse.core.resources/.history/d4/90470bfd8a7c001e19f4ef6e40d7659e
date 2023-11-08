@@ -1,0 +1,20 @@
+/*
+ * fsm_button_processing.h
+ *
+ *  Created on: Nov 6, 2023
+ *      Author: khoitran
+ */
+
+#ifndef INC_FSM_BUTTON_PROCESSING_H_
+#define INC_FSM_BUTTON_PROCESSING_H_
+
+#include "main.h"
+#include "software_timer.h"
+#include "button.h"
+#include "fsm_trafficlight.h"
+#include "lcd.h"
+
+void fsm_button_displayTraffic(void);
+
+
+#endif /* INC_FSM_BUTTON_PROCESSING_H_ */

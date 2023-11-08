@@ -1,0 +1,121 @@
+/*
+ * fsm_button_processing.c
+ *
+ *  Created on: Nov 6, 2023
+ *      Author: khoitran
+ */
+
+
+#include "fsm_button_processing.h"
+#include "fsm_trafficlight.h"
+
+#define MODE_BTN 	0
+#define INC_BTN		1
+
+enum StateButton{
+	INITBTN,
+	NORMAL,
+	RED_MODIFY,
+	YELLOW_MODIFY,
+	GREEN_MODIFY,
+	INC,
+	CONFIRM
+};
+
+enum ChangeTimeStatus {
+	RED_CHANGE,
+	YELLOW_CHANGE,
+	GREEN_CHANGE,
+};
+
+enum StateLight currentStateVER = INIT;
+enum StateLight currentStateHOR = INIT;
+enum StateButton statusBTN = INITBTN;
+enum ChangeTimeStatus changeTimeState = RED_CHANGE;
+enum ChangeTimeStatus manualDisplay = RED_CHANGE;
+enum StateLight State = RED_STATE;
+int trafficTime[3] = {36,24,12};
+int trafficRealTime[3];
+int indexOfLight = REDVERFLAG;
+int flag = 0;
+
+void incTime(int index){
+	switch(index){
+		case RED_CHANGE: trafficTime[GREEN_CHANGE]++; break;
+		case YELLOW_CHANGE: trafficTime[RED_CHANGE]++; break;
+		case GREEN_CHANGE: trafficTime[RED_CHANGE]++; break;
+	}
+	trafficTime[index]++;
+}
+
+void translate(void){
+	for(int i = 0; i < 3; i++){
+		trafficRealTime[i] = trafficTime[i] * 1000;
+	}
+}
+
+void fsm_button_displayTraffic(void){
+	switch(statusBTN){
+	case INITBTN:
+		currentStateVER = INIT;
+		currentStateHOR = INIT;
+		statusBTN = NORMAL;
+		break;
+	case NORMAL:
+		translate();
+		lcd_ShowStr(20, 30, "Normal State!!!", WHITE, RED, 24, 0);
+		displayTraffic(trafficRealTime);
+
+		if(button_count[12] == 1){
+			statusBTN = RED_MODIFY;
+		}
+		break;
+	case RED_MODIFY:
+//		setTimer(BLINK,10);
+//		blinkyLight(State);
+//		if(button_count[12] == 1){
+//			switch(changeTimeState){
+//				case RED_CHANGE:
+//					lcd_ShowStr(20, 30, "Red Modification State!!!", WHITE, RED, 24, 0);
+//					State = YELLOW_STATE;
+//					indexOfLight = YELLOWVERFLAG;
+//					changeTimeState = YELLOW_CHANGE;
+//					break;
+//				case YELLOW_CHANGE:
+//					lcd_ShowStr(20, 30, "Yellow Modification State!!!", WHITE, RED, 24, 0);
+//					State = GREEN_STATE;
+//					indexOfLight = GREENVERFLAG;
+//					changeTimeState = GREEN_CHANGE;
+//					break;
+//				case GREEN_CHANGE:
+//					lcd_ShowStr(20, 30, "Green Modification State!!!", WHITE, RED, 24, 0);
+//					State = RED_STATE;
+//					indexOfLight = REDVERFLAG;
+//					changeTimeState = RED_CHANGE;
+//					break;
+//			}
+//		}
+		lcd_ShowStr(20, 30, "Red Modification State!!!", WHITE, RED, 24, 0);
+		if(button_count[12] == 1) statusBTN = YELLOW_MODIFY;
+		if(button_count[13] == 1) statusBTN = INC;
+		if(button_count[14] == 1) statusBTN = CONFIRM;
+
+		break;
+	case YELLOW_MODIFY:
+		lcd_ShowStr(20, 30, "Yellow Modification State!!!", WHITE, RED, 24, 0);
+		if(button_count[12] == 1) statusBTN = GREEN_MODIFY;
+		break;
+	case GREEN_MODIFY:
+		lcd_ShowStr(20, 30, "Green Modification State!!!", WHITE, RED, 24, 0);
+		if(button_count[12] == 1) statusBTN = RED_MODIFY;
+		break;
+	case INC:
+		incTime(indexOfLight);
+		statusBTN = MODE;
+		break;
+
+	case CONFIRM:
+		statusBTN = NORMAL;
+		break;
+}
+}

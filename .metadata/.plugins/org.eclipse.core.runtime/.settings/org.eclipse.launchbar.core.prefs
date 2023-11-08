@@ -1,0 +1,9 @@
+LaunchTargetManager/org.eclipse.launchbar.core.launchTargetType.local,Local/arch=x86_64
+LaunchTargetManager/org.eclipse.launchbar.core.launchTargetType.local,Local/name=Local
+LaunchTargetManager/org.eclipse.launchbar.core.launchTargetType.local,Local/os=linux
+configDescList=org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:LAB1 Debug (1),org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:LAB1 Debug,org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:LAB1 Debug (2),org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:Bai2_Timer_7seg,org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:Bai3_Lcd_button Debug
+eclipse.preferences.version=1
+org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:Bai2_Timer_7seg/activeLaunchMode=run
+org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:Bai2_Timer_7seg/activeLaunchTarget=null\:---
+org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:LAB1\ Debug/activeLaunchMode=run
+org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:LAB1\ Debug/activeLaunchTarget=null\:---

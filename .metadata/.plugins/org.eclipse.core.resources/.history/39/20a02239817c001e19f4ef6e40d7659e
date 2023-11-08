@@ -1,0 +1,46 @@
+/*
+ * fsm_trafficlight.h
+ *
+ *  Created on: Nov 6, 2023
+ *      Author: khoitran
+ */
+
+#ifndef INC_FSM_TRAFFICLIGHT_H_
+#define INC_FSM_TRAFFICLIGHT_H_
+
+#include "main.h"
+#include "software_timer.h"
+
+#define REDVERFLAG			0
+#define YELLOWVERFLAG		1
+#define GREENVERFLAG		2
+#define REDHORFLAG			3
+#define YELLOWHORFLAG		4
+#define GREENHORFLAG		5
+#define BLINK				6
+
+enum flow{
+	HOR,
+	VER
+};
+
+enum StateLight{
+	INIT,
+	RED,
+	YELLOW,
+	GREEN
+};
+
+extern enum StateLight currentStateVER;
+extern enum StateLight currentStateHOR;
+
+void turnOnLight(enum StateLight, enum flow);
+void turnOnPedes(void);
+void blinkyPedes(void);
+void clearPedes(void);
+void blinkyLight(enum StateLight);
+void clearTrafficLight(void);
+
+
+
+#endif /* INC_FSM_TRAFFICLIGHT_H_ */
